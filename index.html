@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مكتبة الحكمة الإلكترونية | Al-Hikma Library & Bookstore</title>
+    <meta name="description"
+        content="منصة عالمية لاستكشاف واستعارة وشراء أجود الكتب العربية والعالمية، وروايات، علوم، تكنولوجيا وتطوير ذات.">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- Google Fonts: Cairo & Amiri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Leaflet CSS for Interactive Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#15203e',
+                            900: '#0b1329',
+                            950: '#070c1b'
+                        },
+                        amber: {
+                            500: '#d97706',
+                            600: '#b45309'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body
+    class="bg-[#fdfbf7] dark:bg-navy-900 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-white">
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="sticky top-0 z-40 glass-nav border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+
+            <!-- Logo -->
+            <div onclick="AppRouter.navigate('home')" class="flex items-center gap-3 cursor-pointer group">
+                <div
+                    class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 text-white flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                    <i class="fas fa-book-reader text-2xl"></i>
+                </div>
+                <div>
+                    <span
+                        class="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight font-literary block leading-none">مكتبة
+                        الحكمة</span>
+                    <span
+                        class="text-[10px] text-amber-600 dark:text-amber-400 font-semibold tracking-widest uppercase">Al-Hikma
+                        Bookstore</span>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center gap-8 font-semibold text-sm">
+                <button onclick="AppRouter.navigate('home')" data-page="home"
+                    class="nav-link text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 py-1">الرئيسية</button>
+                <button onclick="AppRouter.navigate('catalog')" data-page="catalog"
+                    class="nav-link text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 py-1">فهرس
+                    الكتب</button>
+                <button onclick="AppRouter.navigate('about')" data-page="about"
+                    class="nav-link text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 py-1">من
+                    نحن</button>
+                <button onclick="AppRouter.navigate('contact')" data-page="contact"
+                    class="nav-link text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 py-1">اتصل
+                    بنا</button>
+                <button onclick="AppRouter.navigate('faq')" data-page="faq"
+                    class="nav-link text-slate-700 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 py-1">الأسئلة
+                    الشائعة</button>
+            </nav>
+
+            <!-- Actions & Controls -->
+            <div class="flex items-center gap-3">
+                <!-- Search Quick Button -->
+                <button onclick="AppRouter.navigate('catalog')"
+                    class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-colors"
+                    title="البحث في الفهرس">
+                    <i class="fas fa-search text-base"></i>
+                </button>
+
+                <!-- Dark Mode Toggle -->
+                <button onclick="AppRouter.toggleTheme()"
+                    class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-colors"
+                    title="تبديل الوضع">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block text-amber-400"></i>
+                </button>
+
+                <!-- Wishlist Badge -->
+                <button onclick="AppRouter.navigate('wishlist')"
+                    class="relative w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-colors"
+                    title="المفضلة">
+                    <i class="far fa-heart text-base"></i>
+                    <span id="badge-wishlist"
+                        class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md">0</span>
+                </button>
+
+                <!-- Cart / Borrow Badge -->
+                <button onclick="AppRouter.navigate('cart')"
+                    class="relative w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-colors"
+                    title="سلة الطلبات">
+                    <i class="fas fa-shopping-bag text-base"></i>
+                    <span id="badge-cart"
+                        class="absolute -top-1.5 -right-1.5 bg-amber-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md">0</span>
+                </button>
+
+                <!-- User Profile / Auth -->
+                <button onclick="AppRouter.navigate('dashboard')"
+                    class="bg-slate-900 dark:bg-amber-500 hover:bg-amber-600 dark:hover:bg-amber-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2">
+                    <i class="fas fa-user-circle text-sm"></i>
+                    <span class="hidden sm:inline">حسابي</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- ================= MAIN CONTENT PAGES CONTAINER ================= -->
+    <main class="flex-1">
+
+        <!-- ===== 1. HOME PAGE ===== -->
+        <section id="page-home" class="page-section">
+            <!-- Hero Section -->
+            <div
+                class="relative overflow-hidden hero-gradient py-16 lg:py-24 border-b border-slate-200/50 dark:border-slate-800/50">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        <div class="lg:col-span-7 space-y-6 text-center lg:text-right">
+                            <span
+                                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-xs font-bold shadow-xs">
+                                <i class="fas fa-gem"></i> بوابتك لأعماق المعرفة والإلهام الأدبي
+                            </span>
+                            <h1
+                                class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-tight font-literary">
+                                اكتشف عالماً من <span class="text-amber-600 dark:text-amber-400">الكتب والروايات</span>
+                                بين يديك
+                            </h1>
+                            <p
+                                class="text-slate-600 dark:text-slate-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+                                تصفح واستعر آلاف العناوين المتميزة في العلوم، التاريخ، التكنولوجيا والأدب العالمي. قراءة
+                                إلكترونية فورية أو طلب نسخ ورقية تصلك حتى باب المنزل.
+                            </p>
+
+                            <!-- Hero Quick Search Bar -->
+                            <div
+                                class="bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-700/60 max-w-xl mx-auto lg:mx-0 flex items-center gap-2">
+                                <i class="fas fa-search text-slate-400 pr-3 text-lg"></i>
+                                <input type="text" id="hero-search-input"
+                                    placeholder="ابحث باسم الكتاب، اسم الكاتب، أو الموضوع..."
+                                    class="w-full bg-transparent border-0 focus:ring-0 text-sm py-3 text-slate-900 dark:text-white placeholder-slate-400 outline-none">
+                                <button
+                                    onclick="const val = document.getElementById('hero-search-input').value; AppRouter.navigate('catalog'); setTimeout(() => { const el = document.getElementById('catalog-search-input'); if (el) { el.value = val; AppRouter.renderCatalogPage(); } }, 100);"
+                                    class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all shadow-md whitespace-nowrap">
+                                    استكشف الآن
+                                </button>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-center lg:justify-start gap-8 pt-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                <div><i class="fas fa-check-circle text-amber-500 ml-1"></i> +10,000 كتاب ورقي وإلكتروني
+                                </div>
+                                <div><i class="fas fa-check-circle text-amber-500 ml-1"></i> توصيل سريع أو معاينة PDF
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hero Feature Illustration Card -->
+                        <div class="lg:col-span-5 relative">
+                            <div
+                                class="relative mx-auto max-w-sm rounded-3xl p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                                <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80"
+                                    alt="Book Feature" class="w-full h-80 object-cover rounded-2xl">
+                                <div class="p-4">
+                                    <span class="text-xs font-bold text-amber-600 dark:text-amber-400 block mb-1">كتاب
+                                        الأسبوع المميز</span>
+                                    <h3 class="font-bold text-lg text-slate-900 dark:text-white">العادات الذكية وتشكيل
+                                        الذات</h3>
+                                    <p class="text-xs text-slate-500 mt-1">بقلم د. مريم السيد</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Categories Section -->
+            <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white font-literary mb-3">الأقسام
+                        والتصنيفات المميزة</h2>
+                    <p class="text-slate-500 text-sm">اختر مجال اهتمامك وابدأ رحلتك القرائية بين آلاف المراجع والكتب
+                        المتخصصة</p>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div onclick="AppRouter.navigate('catalog', {category: 'novels'})"
+                        class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 shadow-xs hover:shadow-xl hover:border-amber-500/50 text-center cursor-pointer transition-all group">
+                        <div
+                            class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-feather-alt"></i>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-1">روايات وأدب</h4>
+                        <span class="text-[11px] text-slate-400"> أكثر من 3,500 كتاب</span>
+                    </div>
+
+                    <div onclick="AppRouter.navigate('catalog', {category: 'technology'})"
+                        class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 shadow-xs hover:shadow-xl hover:border-amber-500/50 text-center cursor-pointer transition-all group">
+                        <div
+                            class="w-14 h-14 mx-auto rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-1">تكنولوجيا وذكاء</h4>
+                        <span class="text-[11px] text-slate-400"> أكثر من 1,200 كتاب</span>
+                    </div>
+
+                    <div onclick="AppRouter.navigate('catalog', {category: 'self-help'})"
+                        class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 shadow-xs hover:shadow-xl hover:border-amber-500/50 text-center cursor-pointer transition-all group">
+                        <div
+                            class="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-1">تطوير ذات</h4>
+                        <span class="text-[11px] text-slate-400"> أكثر من 2,100 كتاب</span>
+                    </div>
+
+                    <div onclick="AppRouter.navigate('catalog', {category: 'science'})"
+                        class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 shadow-xs hover:shadow-xl hover:border-amber-500/50 text-center cursor-pointer transition-all group">
+                        <div
+                            class="w-14 h-14 mx-auto rounded-2xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-atom"></i>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-1">علوم وفيزياء</h4>
+                        <span class="text-[11px] text-slate-400"> أكثر من 950 كتاب</span>
+                    </div>
+
+                    <div onclick="AppRouter.navigate('catalog', {category: 'history'})"
+                        class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 shadow-xs hover:shadow-xl hover:border-amber-500/50 text-center cursor-pointer transition-all group">
+                        <div
+                            class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-monument"></i>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-1">تاريخ وحضارة</h4>
+                        <span class="text-[11px] text-slate-400"> أكثر من 1,800 كتاب</span>
+                    </div>
+
+                    <div onclick="AppRouter.navigate('catalog', {category: 'children'})"
+                        class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 shadow-xs hover:shadow-xl hover:border-amber-500/50 text-center cursor-pointer transition-all group">
+                        <div
+                            class="w-14 h-14 mx-auto rounded-2xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-child"></i>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-1">أطفال ويافعون</h4>
+                        <span class="text-[11px] text-slate-400"> أكثر من 800 كتاب</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Best Sellers Grid -->
+            <div class="py-16 bg-slate-100/60 dark:bg-slate-900/60 border-y border-slate-200/60 dark:border-slate-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2
+                                class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-literary">
+                                الكتب الأكثر قراءة ومبيعاً</h2>
+                            <p class="text-slate-500 text-xs mt-1">أبرز الإصدارات النادرة والمفضلة لدى القراء هذا الشهر
+                            </p>
+                        </div>
+                        <button onclick="AppRouter.navigate('catalog')"
+                            class="text-amber-600 dark:text-amber-400 text-xs font-bold hover:underline flex items-center gap-1">
+                            عرض الكل في الفهرس <i class="fas fa-arrow-left"></i>
+                        </button>
+                    </div>
+
+                    <div id="home-featured-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Arrivals Grid -->
+            <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-literary">
+                            أحدث الإصدارات المضافة</h2>
+                        <p class="text-slate-500 text-xs mt-1">تجدد يومي للكتب والدارسات والمراجع العربية والعالمية</p>
+                    </div>
+                </div>
+
+                <div id="home-new-arrivals-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+
+            <!-- Testimonials & Reviews -->
+            <div class="py-16 bg-slate-900 text-white relative overflow-hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div class="text-center max-w-xl mx-auto mb-12">
+                        <span class="text-amber-400 text-xs font-bold uppercase tracking-wider block mb-2">ثقة مجتمع
+                            القراء</span>
+                        <h2 class="text-3xl font-bold font-literary">ماذا يقول قرّاؤنا عن مكتبة الحكمة؟</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-6 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-4">
+                            <div class="flex items-center gap-1 text-amber-400 text-xs">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed font-literary">"سرعة توفير الكتب واستعارتها
+                                إلكترونياً ممتازة جداً. قراءة العينة المجانية ساعدتني كثيراً قبل اتخاذ قرار الشراء."</p>
+                            <div class="flex items-center gap-3 pt-2">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+                                    alt="User" class="w-10 h-10 rounded-full object-cover">
+                                <div>
+                                    <h4 class="font-bold text-xs text-white">د. فاطمة الزهراء</h4>
+                                    <span class="text-[10px] text-slate-400">باحثة في الأدب المقارن</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-4">
+                            <div class="flex items-center gap-1 text-amber-400 text-xs">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed font-literary">"تغليف الكتب الورقية رائع
+                                ومواعيد التسليم دقيقة. مكتبة راقية تعبر عن القيمة الثقافية للحضارة العربية."</p>
+                            <div class="flex items-center gap-3 pt-2">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80"
+                                    alt="User" class="w-10 h-10 rounded-full object-cover">
+                                <div>
+                                    <h4 class="font-bold text-xs text-white">مهندس أنس العتيبي</h4>
+                                    <span class="text-[10px] text-slate-400">قارئ شغوف بالتكنولوجيا</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-4">
+                            <div class="flex items-center gap-1 text-amber-400 text-xs">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed font-literary">"التصميم التفاعلي للموقع
+                                وسهولة إضافة الكتب للمفضلة جعل من تجربة القراءة عادة يومية ممتعة."</p>
+                            <div class="flex items-center gap-3 pt-2">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80"
+                                    alt="User" class="w-10 h-10 rounded-full object-cover">
+                                <div>
+                                    <h4 class="font-bold text-xs text-white">منى عبد السلام</h4>
+                                    <span class="text-[10px] text-slate-400">عضو نادي القرّاء</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ===== 2. CATALOG / EXPLORE PAGE ===== -->
+        <section id="page-catalog" class="page-section hidden py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <!-- Catalog Header Bar -->
+                <div
+                    class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200 dark:border-slate-800">
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white font-literary">فهرس الكتب
+                            واستكشاف المكتبة</h1>
+                        <p class="text-xs text-slate-500 mt-1">يُعرض حالياً <span id="catalog-count"
+                                class="font-bold text-amber-600">0</span> كتاب متوفر</p>
+                    </div>
+
+                    <!-- Search Box in Catalog Header -->
+                    <div class="w-full md:w-80 relative">
+                        <input type="text" id="catalog-search-input" oninput="AppRouter.renderCatalogPage()"
+                            placeholder="ابحث باسم الكتاب أو الكاتب..."
+                            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-slate-400 text-sm"></i>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Sidebar Filters -->
+                    <aside class="lg:col-span-3 space-y-6">
+                        <div
+                            class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-xs space-y-5">
+                            <h3
+                                class="font-bold text-slate-900 dark:text-white text-sm flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                                <span><i class="fas fa-filter text-amber-500 ml-2"></i> خيارات التصفية</span>
+                                <button
+                                    onclick="document.getElementById('filter-category').value=''; document.getElementById('catalog-search-input').value=''; AppRouter.renderCatalogPage();"
+                                    class="text-[11px] text-amber-600 hover:underline font-normal">إعادة ضبط</button>
+                            </h3>
+
+                            <!-- Category Select Filter -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">التصنيف
+                                    رئيسي:</label>
+                                <select id="filter-category"
+                                    onchange="AppRouter.renderCatalogPage({category: this.value})"
+                                    class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200 outline-none">
+                                    <option value="">جميع التصنيفات</option>
+                                    <option value="novels">روايات وأدب</option>
+                                    <option value="technology">تكنولوجيا وذكاء اصطناعي</option>
+                                    <option value="self-help">تطوير ذات ونفس</option>
+                                    <option value="science">علوم وفيزياء</option>
+                                    <option value="history">تاريخ وحضارات</option>
+                                    <option value="children">أطفال ويافعون</option>
+                                </select>
+                            </div>
+
+                            <!-- Rating Filter -->
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">التقييم:</label>
+                                <div class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" checked
+                                            class="rounded border-slate-300 text-amber-500 focus:ring-amber-500"> 4 نجوم
+                                        فما فوق
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" checked
+                                            class="rounded border-slate-300 text-amber-500 focus:ring-amber-500"> 3 نجوم
+                                        فما فوق
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Book Cards Grid -->
+                    <main class="lg:col-span-9">
+                        <div id="catalog-books-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Filled dynamically -->
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ===== 3. BOOK DETAILS PAGE ===== -->
+        <section id="page-book-details" class="page-section hidden py-12">
+            <div id="book-details-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Filled dynamically -->
+            </div>
+        </section>
+
+
+        <!-- ===== 4. ABOUT US PAGE ===== -->
+        <section id="page-about" class="page-section hidden py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+                <!-- About Vision & Story -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    <div class="lg:col-span-6 space-y-6">
+                        <span
+                            class="text-amber-600 dark:text-amber-400 font-bold text-xs uppercase tracking-widest block">عن
+                            صرحنا الثقافي</span>
+                        <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white font-literary leading-snug">
+                            مكتبة الحكمة: جسر يربط بين عراقة التراث وتطلعات المستقبل الرقمي
+                        </h1>
+                        <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                            تأسست مكتبة الحكمة لتكون المرجع الأول والشامل للقارئ العربي والمستكشف الشغوف للمعرفة. نجمع
+                            بين جماليات الكتاب الورقي الأصيل والمرونة العالية للحلول الرقمية والمعاينة السريعة.
+                        </p>
+                        <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                            هدفنا هو تسهيل الوصول إلى المعرفة، ودعم المؤلفين العرب، وتوفير بيئة قرائية تلهم العقول وتصنع
+                            قادة الغد.
+                        </p>
+                    </div>
+                    <div class="lg:col-span-6">
+                        <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=800&q=80"
+                            alt="Library Interior"
+                            class="rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full h-96 object-cover">
+                    </div>
+                </div>
+
+                <!-- Fast Stats Counter -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div
+                        class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center space-y-2">
+                        <div class="text-4xl font-black text-amber-500 font-literary">+10,000</div>
+                        <div class="text-xs font-bold text-slate-700 dark:text-slate-300">عنوان وكتاب مفهرس</div>
+                    </div>
+                    <div
+                        class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center space-y-2">
+                        <div class="text-4xl font-black text-amber-500 font-literary">+50,000</div>
+                        <div class="text-xs font-bold text-slate-700 dark:text-slate-300">قارئ ومستعير نشط</div>
+                    </div>
+                    <div
+                        class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center space-y-2">
+                        <div class="text-4xl font-black text-amber-500 font-literary">+120</div>
+                        <div class="text-xs font-bold text-slate-700 dark:text-slate-300">دار نشر ومؤلف مشارك</div>
+                    </div>
+                    <div
+                        class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center space-y-2">
+                        <div class="text-4xl font-black text-amber-500 font-literary">24/7</div>
+                        <div class="text-xs font-bold text-slate-700 dark:text-slate-300">تصفح وقراءة إلكترونية</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ===== 5. CONTACT US PAGE ===== -->
+        <section id="page-contact" class="page-section hidden py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                <div class="text-center max-w-2xl mx-auto">
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white font-literary mb-2">تواصل مع إدارة
+                        المكتبة</h1>
+                    <p class="text-slate-500 text-xs">نحن هنا للإجابة على استفساراتك، تلقي اقتراحات الكتب، ومساعدتك في
+                        طلبات الاستعارة</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Form -->
+                    <div
+                        class="lg:col-span-7 bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                        <form
+                            onsubmit="event.preventDefault(); UI.showToast('تم إرسال رسالتك بنجاح! سيتواصل معك فريق المكتبة قريباً.', 'success'); this.reset();"
+                            class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الاسم
+                                        الكامل:</label>
+                                    <input type="text" required placeholder="أدخل اسمك"
+                                        class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500">
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">البريد
+                                        الإلكتروني:</label>
+                                    <input type="email" required placeholder="example@domain.com"
+                                        class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الموضوع:</label>
+                                <input type="text" required placeholder="موضوع الرسالة أو الاستفسار"
+                                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الرسالة:</label>
+                                <textarea required rows="4" placeholder="اكتب تفاصيل الرسالة هنا..."
+                                    class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200 outline-none focus:border-amber-500"></textarea>
+                            </div>
+                            <button type="submit"
+                                class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-8 py-3 rounded-xl shadow-lg transition-all">
+                                إرسال الرسالة
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Details & Map -->
+                    <div class="lg:col-span-5 space-y-6">
+                        <div
+                            class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 space-y-4 text-xs">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 dark:text-white">العنوان المباشر:</h4>
+                                    <p class="text-slate-500">شارع الثقافة، جاردن سيتي، الفرع الرئيسي</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 dark:text-white">البريد الإلكتروني:</h4>
+                                    <p class="text-slate-500">info@alhikma-library.org</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Leaflet Map Container -->
+                        <div id="contact-map"
+                            class="h-64 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-md"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ===== 6. FAQ PAGE ===== -->
+        <section id="page-faq" class="page-section hidden py-16">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white font-literary mb-2">الأسئلة الشائعة
+                        والإجابات</h1>
+                    <p class="text-slate-500 text-xs">إجابات سريعة ومفصلة عن معظم استفسارات القرّاء حول الاستعارة والشحن
+                        والاشتراكات</p>
+                </div>
+
+                <div class="space-y-4">
+                    <details
+                        class="group bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-xs cursor-pointer">
+                        <summary
+                            class="font-bold text-sm text-slate-900 dark:text-white flex justify-between items-center list-none">
+                            <span>كيف يتم طلب استعارة كتاب وقراءته؟</span>
+                            <i
+                                class="fas fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p
+                            class="mt-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700/60 pt-3">
+                            يمكنك اختيار أي كتاب من الفهرس والنقر على "طلب استعارة". يتيح لك النظام اختيار قراءة الكتاب
+                            إلكترونياً بصيغة PDF عبر حسابك، أو طلب وصول النسخة الورقية حتى باب منزلك لمدة 14 يوماً قابلة
+                            للتمديد.
+                        </p>
+                    </details>
+
+                    <details
+                        class="group bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-xs cursor-pointer">
+                        <summary
+                            class="font-bold text-sm text-slate-900 dark:text-white flex justify-between items-center list-none">
+                            <span>هل يمكنني قراءة عينة مجانية قبل الاستعارة؟</span>
+                            <i
+                                class="fas fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p
+                            class="mt-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700/60 pt-3">
+                            نعم بالتأكيد! يحتوي كل كتاب على زر "قراءة عينة PDF" يتيح لك الاطلاع على الصفحات والمقتطفات
+                            الأولى للكتاب مجاناً للتأكد من تناسب أسلوب الكاتب مع ذوقك القرائي.
+                        </p>
+                    </details>
+
+                    <details
+                        class="group bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-xs cursor-pointer">
+                        <summary
+                            class="font-bold text-sm text-slate-900 dark:text-white flex justify-between items-center list-none">
+                            <span>ما هي مدة توصيل الكتب الورقية؟</span>
+                            <i
+                                class="fas fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p
+                            class="mt-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700/60 pt-3">
+                            تتراوح مدة الشحن والتوصيل بين 24 إلى 48 ساعة داخل العواصم الرئيسية، مع توفير خدمة التتبع
+                            المباشر لشحنتك عبر حسابك الشخصي في الموقع.
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ===== 7. WISHLIST PAGE ===== -->
+        <section id="page-wishlist" class="page-section hidden py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-8 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white font-literary">قائمة الكتب المفضلة
+                        وقائمة القراءة</h1>
+                    <p class="text-xs text-slate-500 mt-1">الكتب التي قمت بحفظها للرجوع إليها ولاستعارتها لاحقاً</p>
+                </div>
+                <div id="wishlist-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Filled dynamically -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ===== 8. CART & CHECKOUT PAGE ===== -->
+        <section id="page-cart" class="page-section hidden py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-8 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white font-literary">سلة طلبات الاستعارة
+                        والشراء</h1>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div id="cart-items-list" class="lg:col-span-8 space-y-4">
+                        <!-- Filled dynamically -->
+                    </div>
+                    <div id="cart-summary-box" class="lg:col-span-4">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ===== 9. USER DASHBOARD PAGE ===== -->
+        <section id="page-dashboard" class="page-section hidden py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+                <!-- Profile Banner Card -->
+                <div
+                    class="bg-gradient-to-r from-slate-900 via-slate-800 to-amber-900 text-white p-8 rounded-3xl shadow-xl flex items-center gap-6">
+                    <div
+                        class="w-20 h-20 rounded-2xl bg-amber-500 text-white font-bold text-3xl flex items-center justify-center shadow-lg border-2 border-white/20">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div>
+                        <h2 id="dash-user-name" class="text-2xl font-bold font-literary">عبد الله العربي</h2>
+                        <p id="dash-user-email" class="text-xs text-amber-300 mt-1">abdallah@example.com</p>
+                        <span
+                            class="inline-block mt-2 px-3 py-1 rounded-full bg-white/10 text-[10px] text-amber-200">عضوية
+                            ذهبية نشطة</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-slate-900 dark:text-white text-lg mb-4">الكتب المستعارة حالياً:</h3>
+                    <div id="dash-borrowed-books" class="space-y-4">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ===== 10. CUSTOM 404 PAGE ===== -->
+        <section id="page-404" class="page-section hidden py-24 text-center">
+            <div class="max-w-md mx-auto px-4 space-y-6">
+                <div class="text-8xl font-black text-amber-500 font-literary">404</div>
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">الصفحة غير موجودة</h2>
+                <p class="text-xs text-slate-500">يبدو أن الصفحة التي تحاول الوصول إليها قد تم نقلها أو أن الرابط غير
+                    صحيح.</p>
+                <button onclick="AppRouter.navigate('home')"
+                    class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-lg transition-all">
+                    العودة للصفحة الرئيسية
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 text-white font-bold text-lg font-literary">
+                    <i class="fas fa-book-reader text-amber-500"></i> مكتبة الحكمة
+                </div>
+                <p class="leading-relaxed">صرح ثقافي عربي يهدف لنشر ثقافة القراءة وتسهيل الوصول إلى أحدث الكتب والمراجع
+                    العلمية والأدبية.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-sm mb-3">روابط تصفح سريعة</h4>
+                <ul class="space-y-2">
+                    <li><button onclick="AppRouter.navigate('home')" class="hover:text-amber-400">الرئيسية</button></li>
+                    <li><button onclick="AppRouter.navigate('catalog')" class="hover:text-amber-400">فهرس الكتب
+                            الكامل</button></li>
+                    <li><button onclick="AppRouter.navigate('about')" class="hover:text-amber-400">عن المكتبة
+                            والرؤية</button></li>
+                    <li><button onclick="AppRouter.navigate('faq')" class="hover:text-amber-400">الأسئلة
+                            الشائعة</button></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-sm mb-3">أقسام الكتب</h4>
+                <ul class="space-y-2">
+                    <li><button onclick="AppRouter.navigate('catalog', {category: 'novels'})"
+                            class="hover:text-amber-400">روايات وأدب</button></li>
+                    <li><button onclick="AppRouter.navigate('catalog', {category: 'technology'})"
+                            class="hover:text-amber-400">تكنولوجيا وعلوم برمجية</button></li>
+                    <li><button onclick="AppRouter.navigate('catalog', {category: 'self-help'})"
+                            class="hover:text-amber-400">تطوير وتشكيل الذات</button></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-sm mb-3">تابعنا على شبكات التواصل</h4>
+                <div class="flex gap-3 text-lg">
+                    <a href="#"
+                        class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center hover:bg-amber-500 hover:text-white transition-colors"><i
+                            class="fab fa-twitter"></i></a>
+                    <a href="#"
+                        class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center hover:bg-amber-500 hover:text-white transition-colors"><i
+                            class="fab fa-facebook"></i></a>
+                    <a href="#"
+                        class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center hover:bg-amber-500 hover:text-white transition-colors"><i
+                            class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 text-center py-4 text-[11px] text-slate-500">
+            جميع الحقوق محفوظة © 2026 مكتبة الحكمة الإلكترونية. جاهز للرفع والربط بـ Vercel / Netlify / GitHub Pages.
+        </div>
+    </footer>
+
+    <!-- Leaflet Map JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Application Scripts -->
+    <script src="./books-data.js"></script>
+    <script src="./store.js"></script>
+    <script src="./ui.js"></script>
+    <script src="./app.js"></script>
+</body>
+
+</html>
